@@ -289,9 +289,795 @@ class SuperDrag {
             position_text = 3;
           }
         }
-      } else if (superDrag.superDrag.effect_text === 1) {
-        if (moveY < 0) {
-          position_text = 0;
+        if (!this.dragInBox && !this._dic.timeout && !this.toCancel) {
+          this.notice.style.display = "";
+          let items;
+          let position_text;
+          let position_link;
+          let position_img;
+          this._dic.endX = event.x;
+          this._dic.endY = event.y;
+          let moveX = this._dic.endX - this._dic.startX;
+          let moveY = this._dic.endY - this._dic.startY;
+          if (superDrag.superDrag.effect_text === 0) {
+            if (superDrag.superDrag.direction_sel === 0) {
+              if (moveX < 0 && moveY < 0) {
+                position_text = 0;
+              } else if (moveX < 0 && moveY >= 0) {
+                position_text = 1;
+              } else if (moveX >= 0 && moveY < 0) {
+                position_text = 2;
+              } else {
+                position_text = 3;
+              }
+            } else {
+              if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                position_text = 0;
+              } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                position_text = 1;
+              } else if (Math.abs(moveY) <= Math.abs(moveX) && moveX < 0) {
+                position_text = 2;
+              } else {
+                position_text = 3;
+              }
+            }
+          } else if (superDrag.superDrag.effect_text === 1) {
+            if (moveY < 0) {
+              position_text = 0;
+            } else {
+              position_text = 1;
+            }
+          } else if (superDrag.superDrag.effect_text === 2) {
+            if (moveX < 0) {
+              position_text = 2;
+            } else {
+              position_text = 3;
+            }
+          }
+          if (superDrag.superDrag.effect_link === 0) {
+            if (superDrag.superDrag.direction_sel === 0) {
+              if (moveX < 0 && moveY < 0) {
+                position_link = 0;
+              } else if (moveX < 0 && moveY >= 0) {
+                position_link = 1;
+              } else if (moveX >= 0 && moveY < 0) {
+                position_link = 2;
+              } else {
+                position_link = 3;
+              }
+            } else {
+              if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                position_link = 0;
+              } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                position_link = 1;
+              } else if (Math.abs(moveY) <= Math.abs(moveX) && moveX < 0) {
+                position_link = 2;
+              } else {
+                position_link = 3;
+              }
+            }
+          } else if (superDrag.superDrag.effect_link === 1) {
+            if (moveY < 0) {
+              position_link = 0;
+            } else {
+              position_link = 1;
+            }
+          } else if (superDrag.superDrag.effect_link === 2) {
+            if (moveX < 0) {
+              position_link = 2;
+            } else {
+              position_link = 3;
+            }
+          }
+          if (superDrag.superDrag.effect_img === 0) {
+            if (superDrag.superDrag.direction_sel === 0) {
+              if (moveX < 0 && moveY < 0) {
+                position_img = 0;
+              } else if (moveX < 0 && moveY >= 0) {
+                position_img = 1;
+              } else if (moveX >= 0 && moveY < 0) {
+                position_img = 2;
+              } else {
+                position_img = 3;
+              }
+            } else {
+              if (Math.abs(moveY) > Math.abs(moveX) && moveY < 0) {
+                position_img = 0;
+              } else if (Math.abs(moveY) > Math.abs(moveX) && moveY > 0) {
+                position_img = 1;
+              } else if (Math.abs(moveY) <= Math.abs(moveX) && moveX < 0) {
+                position_img = 2;
+              } else {
+                position_img = 3;
+              }
+            }
+          } else if (superDrag.superDrag.effect_img === 1) {
+            if (moveY < 0) {
+              position_img = 0;
+            } else {
+              position_img = 1;
+            }
+          } else if (superDrag.superDrag.effect_img === 2) {
+            if (moveX < 0) {
+              position_img = 2;
+            } else {
+              position_img = 3;
+            }
+          }
+          if (
+            this.currentDragDirection !=
+            [position_text, position_link, position_img].toString()
+          ) {
+            this.currentDragDirection = [
+              position_text,
+              position_link,
+              position_img,
+            ].toString();
+            let keyword = window
+              .getSelection()
+              .toString()
+              .replace(/(^\s*)|(\s*$)/g, "");
+            let urlPattern =
+              /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+            if (this.dragEvent.srcElement.localName == "a") {
+              if (!this.containsImg) {
+                this.findImg(this.dragEvent.srcElement.childNodes);
+              }
+              if (this.containsImg) {
+                //如果链接包含图片
+                if (superDrag.superDrag.firstEvent) {
+                  if (superDrag.superDrag.link_type[position_link] === 3) {
+                    if (
+                      superDrag.superDrag.linkSearchEngines[position_link].url
+                    ) {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_link
+                        ] +
+                        " 链接 - " +
+                        _link_type[
+                          superDrag.superDrag.link_type[position_link]
+                        ] +
+                        " - " +
+                        chrome.i18n.getMessage("custom_search");
+                    } else {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_link
+                        ] +
+                        " 链接 - " +
+                        _link_type[
+                          superDrag.superDrag.link_type[position_link]
+                        ] +
+                        " - " +
+                        _build_in_seach_engines[
+                          superDrag.superDrag.linkSearchEngines[position_link]
+                        ].name;
+                    }
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]];
+                  }
+                  if (superDrag.superDrag.link_type[position_link] === 0) {
+                    this._dic["url"] = this.dragEvent.srcElement.href;
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_link[position_link] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 1
+                  ) {
+                    this._dic["keywords"] = this.dragEvent.srcElement.href;
+                    this.handle_type = "copyText";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 2
+                  ) {
+                    this._dic["keywords"] = this.dragEvent.srcElement.innerText;
+                    this.handle_type = "copyText";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 3
+                  ) {
+                    keyword = this.dragEvent.srcElement.innerText;
+                    if (
+                      superDrag.superDrag.linkSearchEngines[position_link].url
+                    ) {
+                      this._dic["url"] = superDrag.superDrag.linkSearchEngines[
+                        position_link
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                      this._dic["url"] = _build_in_seach_engines[
+                        superDrag.superDrag.linkSearchEngines[position_link]
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_link[position_link] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 4
+                  ) {
+                    this._dic["keywords"] = this.dragEvent.srcElement.href;
+                    this.handle_type = "qrcode";
+                  }
+                } else {
+                  if (superDrag.superDrag.img_type[position_img] === 5) {
+                    if (
+                      superDrag.superDrag.imgSearchEngines[position_img].url
+                    ) {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_img
+                        ] +
+                        " 图片 - " +
+                        _img_type[superDrag.superDrag.img_type[position_img]] +
+                        " - " +
+                        chrome.i18n.getMessage("custom_search");
+                    } else {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_img
+                        ] +
+                        " 图片 - " +
+                        _img_type[superDrag.superDrag.img_type[position_img]] +
+                        " - " +
+                        _build_in_seach_engines_for_img[
+                          superDrag.superDrag.imgSearchEngines[position_img]
+                        ].name;
+                    }
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_img
+                      ] +
+                      " 图片 - " +
+                      _img_type[superDrag.superDrag.img_type[position_img]];
+                  }
+                  if (superDrag.superDrag.img_type[position_img] === 0) {
+                    this._dic["url"] = this.dragEvent.srcElement.href;
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_img[position_img] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                    this._dic["url"] = this.containsImg.currentSrc;
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_img[position_img] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                    this._dic["keywords"] = this.containsImg.currentSrc;
+                    this.handle_type = "copyImage";
+                  } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                    this._dic["keywords"] = this.containsImg.currentSrc;
+                    this.handle_type = "copyText";
+                  } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                    this._dic["url"] = this.containsImg.currentSrc;
+                    this._dic["flag"] = "download";
+                    this._dic["saveAs"] = superDrag.superDrag.saveAs;
+                    this.handle_type = "sendMessageDownload";
+                  } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                    keyword = this.containsImg.currentSrc;
+                    if (
+                      superDrag.superDrag.imgSearchEngines[position_img].url
+                    ) {
+                      this._dic["url"] = superDrag.superDrag.imgSearchEngines[
+                        position_img
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                      this._dic["url"] = _build_in_seach_engines_for_img[
+                        superDrag.superDrag.imgSearchEngines[position_img]
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_img[position_img] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  }
+                }
+              } else {
+                if (superDrag.superDrag.link_type[position_link] === 3) {
+                  if (
+                    superDrag.superDrag.linkSearchEngines[position_link].url
+                  ) {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]] +
+                      " - " +
+                      chrome.i18n.getMessage("custom_search");
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]] +
+                      " - " +
+                      _build_in_seach_engines[
+                        superDrag.superDrag.linkSearchEngines[position_link]
+                      ].name;
+                  }
+                } else {
+                  this.notice.innerHTML =
+                    this.arrow[superDrag.superDrag.direction_sel][
+                      position_link
+                    ] +
+                    " 链接 - " +
+                    _link_type[superDrag.superDrag.link_type[position_link]];
+                }
+                if (superDrag.superDrag.link_type[position_link] === 0) {
+                  this._dic["url"] = this.dragEvent.srcElement.href;
+                  this._dic["active"] =
+                    superDrag.superDrag.open_type_link[position_link] === 0;
+                  this._dic["flag"] = "openTable";
+                  this.handle_type = "sendMessage";
+                } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                  this._dic["keywords"] = this.dragEvent.srcElement.href;
+                  this.handle_type = "copyText";
+                } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                  this._dic["keywords"] = this.dragEvent.srcElement.innerText;
+                  this.handle_type = "copyText";
+                } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                  keyword = this.dragEvent.srcElement.innerText;
+                  if (
+                    superDrag.superDrag.linkSearchEngines[position_link].url
+                  ) {
+                    this._dic["url"] = superDrag.superDrag.linkSearchEngines[
+                      position_link
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  } else {
+                    this._dic["url"] = _build_in_seach_engines[
+                      superDrag.superDrag.linkSearchEngines[position_link]
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  }
+                  this._dic["active"] =
+                    superDrag.superDrag.open_type_link[position_link] === 0;
+                  this._dic["flag"] = "openTable";
+                  this.handle_type = "sendMessage";
+                } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                  this._dic["keywords"] = this.dragEvent.srcElement.href;
+                  this.handle_type = "qrcode";
+                }
+              }
+            } else if (this.dragEvent.srcElement.localName == "img") {
+              if (superDrag.superDrag.img_type[position_img] === 5) {
+                if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                  this.notice.innerHTML =
+                    this.arrow[superDrag.superDrag.direction_sel][
+                      position_img
+                    ] +
+                    " 图片 - " +
+                    _img_type[superDrag.superDrag.img_type[position_img]] +
+                    " - " +
+                    chrome.i18n.getMessage("custom_search");
+                } else {
+                  this.notice.innerHTML =
+                    this.arrow[superDrag.superDrag.direction_sel][
+                      position_img
+                    ] +
+                    " 图片 - " +
+                    _img_type[superDrag.superDrag.img_type[position_img]] +
+                    " - " +
+                    _build_in_seach_engines_for_img[
+                      superDrag.superDrag.imgSearchEngines[position_img]
+                    ].name;
+                }
+              } else {
+                this.notice.innerHTML =
+                  this.arrow[superDrag.superDrag.direction_sel][position_img] +
+                  " 图片 - " +
+                  _img_type[superDrag.superDrag.img_type[position_img]];
+              }
+              if (superDrag.superDrag.img_type[position_img] === 0) {
+                const temp = this.findImgLink(this.dragEvent.srcElement);
+                this._dic["url"] =
+                  typeof temp != "undefined"
+                    ? temp
+                    : this.dragEvent.srcElement.currentSrc;
+                this._dic["active"] =
+                  superDrag.superDrag.open_type_img[position_img] === 0;
+                this._dic["flag"] = "openTable";
+                this.handle_type = "sendMessage";
+              } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                this._dic["url"] = this.dragEvent.srcElement.currentSrc;
+                this._dic["active"] =
+                  superDrag.superDrag.open_type_img[position_img] === 0;
+                this._dic["flag"] = "openTable";
+                this.handle_type = "sendMessage";
+              } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                this._dic["keywords"] = this.dragEvent.srcElement.currentSrc;
+                this.handle_type = "copyImage";
+              } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                this._dic["keywords"] = this.dragEvent.srcElement.currentSrc;
+                this.handle_type = "copyText";
+              } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                this._dic["url"] = this.dragEvent.srcElement.currentSrc;
+                this._dic["flag"] = "download";
+                this._dic["saveAs"] = superDrag.superDrag.saveAs;
+                this.handle_type = "sendMessageDownload";
+              } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                keyword = this.dragEvent.srcElement.currentSrc;
+                if (superDrag.superDrag.imgSearchEngines[position_img].url) {
+                  this._dic["url"] = superDrag.superDrag.imgSearchEngines[
+                    position_img
+                  ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                } else {
+                  this._dic["url"] = _build_in_seach_engines_for_img[
+                    superDrag.superDrag.imgSearchEngines[position_img]
+                  ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                }
+                this._dic["active"] =
+                  superDrag.superDrag.open_type_img[position_img] === 0;
+                this._dic["flag"] = "openTable";
+                this.handle_type = "sendMessage";
+              }
+            } else if (keyword) {
+              if (urlPattern.test(keyword)) {
+                if (superDrag.superDrag.link_type[position_link] === 3) {
+                  if (
+                    superDrag.superDrag.linkSearchEngines[position_link].url
+                  ) {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]] +
+                      " - " +
+                      chrome.i18n.getMessage("custom_search");
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]] +
+                      " - " +
+                      _build_in_seach_engines[
+                        superDrag.superDrag.linkSearchEngines[position_link]
+                      ].name;
+                  }
+                } else {
+                  this.notice.innerHTML =
+                    this.arrow[superDrag.superDrag.direction_sel][
+                      position_link
+                    ] +
+                    " 链接 - " +
+                    _link_type[superDrag.superDrag.link_type[position_link]];
+                }
+                if (superDrag.superDrag.link_type[position_link] === 0) {
+                  if (keyword.substr(0, 4) != "http") {
+                    keyword = "http://" + keyword;
+                  }
+                  this._dic["url"] = keyword;
+                  this._dic["active"] =
+                    superDrag.superDrag.open_type_link[position_link] === 0;
+                  this._dic["flag"] = "openTable";
+                  this.handle_type = "sendMessage";
+                } else if (
+                  superDrag.superDrag.link_type[position_link] === 1 ||
+                  superDrag.superDrag.link_type[position_link] === 2
+                ) {
+                  this._dic["keywords"] = keyword;
+                  this.handle_type = "copyText";
+                } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                  if (
+                    superDrag.superDrag.linkSearchEngines[position_link].url
+                  ) {
+                    this._dic["url"] = superDrag.superDrag.linkSearchEngines[
+                      position_link
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  } else {
+                    this._dic["url"] = _build_in_seach_engines[
+                      superDrag.superDrag.linkSearchEngines[position_link]
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  }
+                  this._dic["active"] =
+                    superDrag.superDrag.open_type_link[position_link] === 0;
+                  this._dic["flag"] = "openTable";
+                  this.handle_type = "sendMessage";
+                } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                  this._dic["keywords"] = keyword;
+                  this.handle_type = "qrcode";
+                }
+              } else {
+                if (superDrag.superDrag.text_type[position_text] === 0) {
+                  if (superDrag.superDrag.searchEngines[position_text].url) {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_text
+                      ] +
+                      " 文本 - " +
+                      _text_type[superDrag.superDrag.text_type[position_text]] +
+                      " - " +
+                      chrome.i18n.getMessage("custom_search");
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_text
+                      ] +
+                      " 文本 - " +
+                      _text_type[superDrag.superDrag.text_type[position_text]] +
+                      " - " +
+                      _build_in_seach_engines[
+                        superDrag.superDrag.searchEngines[position_text]
+                      ].name;
+                  }
+                } else {
+                  this.notice.innerHTML =
+                    this.arrow[superDrag.superDrag.direction_sel][
+                      position_text
+                    ] +
+                    " 文本 - " +
+                    _text_type[superDrag.superDrag.text_type[position_text]];
+                }
+                if (superDrag.superDrag.text_type[position_text] === 0) {
+                  if (superDrag.superDrag.searchEngines[position_text].url) {
+                    this._dic["url"] = superDrag.superDrag.searchEngines[
+                      position_text
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  } else {
+                    this._dic["url"] = _build_in_seach_engines[
+                      superDrag.superDrag.searchEngines[position_text]
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  }
+                  this._dic["active"] =
+                    superDrag.superDrag.open_type[position_text] === 0;
+                  this._dic["flag"] = "openTable";
+                  this.handle_type = "sendMessage";
+                } else if (superDrag.superDrag.text_type[position_text] === 1) {
+                  this._dic["keywords"] = keyword;
+                  this.handle_type = "copyText";
+                } else if (superDrag.superDrag.text_type[position_text] === 2) {
+                  this._dic["keywords"] = keyword;
+                  this.handle_type = "qrcode";
+                }
+              }
+            } else if (
+              ["A"].indexOf(this.dragEvent.srcElement.parentNode.nodeName) != -1
+            ) {
+              if (!this.containsImg) {
+                this.findImg(this.dragEvent.srcElement.parentNode.childNodes);
+              }
+              if (this.containsImg) {
+                //如果链接包含图片
+                if (superDrag.superDrag.firstEvent) {
+                  if (superDrag.superDrag.link_type[position_link] === 3) {
+                    if (
+                      superDrag.superDrag.linkSearchEngines[position_link].url
+                    ) {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_link
+                        ] +
+                        " 链接 - " +
+                        _link_type[
+                          superDrag.superDrag.link_type[position_link]
+                        ] +
+                        " - " +
+                        chrome.i18n.getMessage("custom_search");
+                    } else {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_link
+                        ] +
+                        " 链接 - " +
+                        _link_type[
+                          superDrag.superDrag.link_type[position_link]
+                        ] +
+                        " - " +
+                        _build_in_seach_engines[
+                          superDrag.superDrag.linkSearchEngines[position_link]
+                        ].name;
+                    }
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]];
+                  }
+                  if (superDrag.superDrag.link_type[position_link] === 0) {
+                    this._dic["url"] =
+                      this.dragEvent.srcElement.parentNode.href;
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_link[position_link] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 1
+                  ) {
+                    this._dic["keywords"] =
+                      this.dragEvent.srcElement.parentNode.href;
+                    this.handle_type = "copyText";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 2
+                  ) {
+                    this._dic["keywords"] = this.dragEvent.srcElement.innerText;
+                    this.handle_type = "copyText";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 3
+                  ) {
+                    keyword = this.dragEvent.srcElement.innerText;
+                    if (
+                      superDrag.superDrag.linkSearchEngines[position_link].url
+                    ) {
+                      this._dic["url"] = superDrag.superDrag.linkSearchEngines[
+                        position_link
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                      this._dic["url"] = _build_in_seach_engines[
+                        superDrag.superDrag.linkSearchEngines[position_link]
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_link[position_link] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (
+                    superDrag.superDrag.link_type[position_link] === 4
+                  ) {
+                    this._dic["keywords"] =
+                      this.dragEvent.srcElement.parentNode.href;
+                    this.handle_type = "qrcode";
+                  }
+                } else {
+                  if (superDrag.superDrag.img_type[position_img] === 5) {
+                    if (
+                      superDrag.superDrag.imgSearchEngines[position_img].url
+                    ) {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_img
+                        ] +
+                        " 图片 - " +
+                        _img_type[superDrag.superDrag.img_type[position_img]] +
+                        " - " +
+                        chrome.i18n.getMessage("custom_search");
+                    } else {
+                      this.notice.innerHTML =
+                        this.arrow[superDrag.superDrag.direction_sel][
+                          position_img
+                        ] +
+                        " 图片 - " +
+                        _img_type[superDrag.superDrag.img_type[position_img]] +
+                        " - " +
+                        _build_in_seach_engines_for_img[
+                          superDrag.superDrag.imgSearchEngines[position_img]
+                        ].name;
+                    }
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_img
+                      ] +
+                      " 图片 - " +
+                      _img_type[superDrag.superDrag.img_type[position_img]];
+                  }
+                  if (superDrag.superDrag.img_type[position_img] === 0) {
+                    this._dic["url"] =
+                      this.dragEvent.srcElement.parentNode.href;
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_img[position_img] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (superDrag.superDrag.img_type[position_img] === 1) {
+                    this._dic["url"] = this.containsImg.currentSrc;
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_img[position_img] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  } else if (superDrag.superDrag.img_type[position_img] === 2) {
+                    this._dic["keywords"] = this.containsImg.currentSrc;
+                    this.handle_type = "copyImage";
+                  } else if (superDrag.superDrag.img_type[position_img] === 3) {
+                    this._dic["keywords"] = this.containsImg.currentSrc;
+                    this.handle_type = "copyText";
+                  } else if (superDrag.superDrag.img_type[position_img] === 4) {
+                    this._dic["url"] = this.containsImg.currentSrc;
+                    this._dic["flag"] = "download";
+                    this._dic["saveAs"] = superDrag.superDrag.saveAs;
+                    this.handle_type = "sendMessageDownload";
+                  } else if (superDrag.superDrag.img_type[position_img] === 5) {
+                    keyword = this.containsImg.currentSrc;
+                    if (
+                      superDrag.superDrag.imgSearchEngines[position_img].url
+                    ) {
+                      this._dic["url"] = superDrag.superDrag.imgSearchEngines[
+                        position_img
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    } else {
+                      this._dic["url"] = _build_in_seach_engines_for_img[
+                        superDrag.superDrag.imgSearchEngines[position_img]
+                      ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                    }
+                    this._dic["active"] =
+                      superDrag.superDrag.open_type_img[position_img] === 0;
+                    this._dic["flag"] = "openTable";
+                    this.handle_type = "sendMessage";
+                  }
+                }
+              } else {
+                if (superDrag.superDrag.link_type[position_link] === 3) {
+                  if (
+                    superDrag.superDrag.linkSearchEngines[position_link].url
+                  ) {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]] +
+                      " - " +
+                      chrome.i18n.getMessage("custom_search");
+                  } else {
+                    this.notice.innerHTML =
+                      this.arrow[superDrag.superDrag.direction_sel][
+                        position_link
+                      ] +
+                      " 链接 - " +
+                      _link_type[superDrag.superDrag.link_type[position_link]] +
+                      " - " +
+                      _build_in_seach_engines[
+                        superDrag.superDrag.linkSearchEngines[position_link]
+                      ].name;
+                  }
+                } else {
+                  this.notice.innerHTML =
+                    this.arrow[superDrag.superDrag.direction_sel][
+                      position_link
+                    ] +
+                    " 链接 - " +
+                    _link_type[superDrag.superDrag.link_type[position_link]];
+                }
+                if (superDrag.superDrag.link_type[position_link] === 0) {
+                  this._dic["url"] = this.dragEvent.srcElement.parentNode.href;
+                  this._dic["active"] =
+                    superDrag.superDrag.open_type_link[position_link] === 0;
+                  this._dic["flag"] = "openTable";
+                  this.handle_type = "sendMessage";
+                } else if (superDrag.superDrag.link_type[position_link] === 1) {
+                  this._dic["keywords"] =
+                    this.dragEvent.srcElement.parentNode.href;
+                  this.handle_type = "copyText";
+                } else if (superDrag.superDrag.link_type[position_link] === 2) {
+                  this._dic["keywords"] =
+                    this.dragEvent.srcElement.parentNode.innerText;
+                  this.handle_type = "copyText";
+                } else if (superDrag.superDrag.link_type[position_link] === 3) {
+                  keyword = this.dragEvent.srcElement.parentNode.innerText;
+                  if (
+                    superDrag.superDrag.linkSearchEngines[position_link].url
+                  ) {
+                    this._dic["url"] = superDrag.superDrag.linkSearchEngines[
+                      position_link
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  } else {
+                    this._dic["url"] = _build_in_seach_engines[
+                      superDrag.superDrag.linkSearchEngines[position_link]
+                    ].url.replace(/%s/gi, encodeURIComponent(keyword));
+                  }
+                  this._dic["active"] =
+                    superDrag.superDrag.open_type_link[position_link] === 0;
+                  this._dic["flag"] = "openTable";
+                  this.handle_type = "sendMessage";
+                } else if (superDrag.superDrag.link_type[position_link] === 4) {
+                  this._dic["keywords"] =
+                    this.dragEvent.srcElement.parentNode.href;
+                  this.handle_type = "qrcode";
+                }
+              }
+            } else {
+              this.notice.innerHTML = "Some mistakes have occurred.";
+            }
+          }
         } else {
           position_text = 1;
         }
